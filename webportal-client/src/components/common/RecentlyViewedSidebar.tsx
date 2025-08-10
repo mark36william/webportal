@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Card, CardContent, CardMedia, IconButton } from '@mui/material';
+import { Box, Typography, Card, CardContent, IconButton } from '@mui/material';
+import ImageWithFallback from './ImageWithFallback';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import { getRecentlyViewed } from '../../services/recentlyViewedService';
@@ -84,12 +85,18 @@ const RecentlyViewedSidebar: React.FC<RecentlyViewedSidebarProps> = ({ open, onC
               }}
               onClick={() => handlePropertyClick(property.id)}
             >
-              <CardMedia
-                component="img"
-                height="100"
-                image={property.imageURLs?.[0] || '/placeholder-property.jpg'}
-                alt={property.title}
-              />
+              <Box sx={{ height: 100, width: '100%', overflow: 'hidden' }}>
+                <ImageWithFallback
+                  src={property.imageURLs?.[0]}
+                  alt={property.title || 'Property image'}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  fallbackSrc="/src/assets/images/placeholder-property.jpg"
+                />
+              </Box>
               <CardContent>
                 <Typography variant="subtitle2" noWrap>{property.title}</Typography>
                 <Typography variant="body2" color="text.secondary">

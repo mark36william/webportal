@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRecentlyViewed } from '../../contexts/RecentlyViewedContext';
+import { getFavorites } from '../../services/favoriteService';
 
 interface AppHeaderProps {
   onMenuClick?: () => void;
@@ -46,6 +47,25 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onMenuClick }) => {
   const { openSidebar, recentlyViewed } = useRecentlyViewed();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [favoritesCount, setFavoritesCount] = useState(0);
+
+  // Fetch favorites count when authenticated
+  useEffect(() => {
+    const fetchFavoritesCount = async () => {
+      if (isAuthenticated) {
+        try {
+          const favorites = await getFavorites();
+          setFavoritesCount(favorites.length);
+        } catch (error) {
+          console.error('Error fetching favorites count:', error);
+        }
+      } else {
+        setFavoritesCount(0);
+      }
+    };
+
+    fetchFavoritesCount();
+  }, [isAuthenticated]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -199,7 +219,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onMenuClick }) => {
                   aria-label="show favorites"
                   sx={{ mr: 2, color: 'text.primary' }}
                 >
-                  <Badge badgeContent={4} color="secondary">
+                  <Badge badgeContent={favoritesCount} color="secondary">
                     <FavoriteBorderIcon />
                   </Badge>
                 </IconButton>

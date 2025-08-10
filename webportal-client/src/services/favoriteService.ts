@@ -1,53 +1,37 @@
-import axios from 'axios';
+import api from '../utils/api';
 import type { Property } from '../types/property';
 
-const API_URL = '/api/favorites';
+const FAVORITES_ENDPOINT = '/favorites';
 
 // Get all favorite properties
 export const getFavorites = async (): Promise<Property[]> => {
   try {
-    const response = await axios.get<Property[]>(API_URL, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await api.get<Property[]>(FAVORITES_ENDPOINT);
     return response.data;
   } catch (error) {
     console.error('Error fetching favorites:', error);
-    throw error;
+    throw new Error('Failed to load favorites. Please try again later.');
   }
 };
 
 // Toggle favorite status for a property
 export const toggleFavorite = async (propertyId: number): Promise<boolean> => {
   try {
-    const response = await axios.post<{ isFavorite: boolean }>(
-      `${API_URL}/${propertyId}`,
-      {},
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      }
+    const response = await api.post<{ isFavorite: boolean }>(
+      `${FAVORITES_ENDPOINT}/${propertyId}`,
+      {}
     );
     return response.data.isFavorite;
   } catch (error) {
     console.error('Error toggling favorite:', error);
-    throw error;
+    throw new Error('Failed to update favorites. Please try again.');
   }
 };
 
 // Check if a property is in favorites
 export const isPropertyFavorite = async (propertyId: number): Promise<boolean> => {
   try {
-    const response = await axios.get<boolean>(`${API_URL}/check/${propertyId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await api.get<boolean>(`${FAVORITES_ENDPOINT}/check/${propertyId}`);
     return response.data;
   } catch (error) {
     console.error('Error checking favorite status:', error);

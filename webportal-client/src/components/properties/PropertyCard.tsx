@@ -4,7 +4,6 @@ import {
   Box, 
   Card, 
   CardContent, 
-  CardMedia, 
   Chip, 
   IconButton, 
   Tooltip, 
@@ -14,6 +13,7 @@ import {
   Avatar,
   CircularProgress
 } from '@mui/material';
+import ImageWithFallback from '../common/ImageWithFallback';
 import { 
   Favorite as FavoriteIcon, 
   FavoriteBorder as FavoriteBorderIcon, 
@@ -30,17 +30,17 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import type { Property } from '../../types/property';
 import { toggleFavorite, isPropertyFavorite } from '../../services/favoriteService';
-// Format price based on listing type
-const formatPrice = (price: number, listingType: 'Sale' | 'Rent'): string => {
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(price);
+// Format price based on listing type (kept for potential future use)
+// const formatPrice = (price: number, listingType: 'Sale' | 'Rent'): string => {
+//   const formattedPrice = new Intl.NumberFormat('en-US', {
+//     style: 'currency',
+//     currency: 'USD',
+//     minimumFractionDigits: 0,
+//     maximumFractionDigits: 0
+//   }).format(price);
   
-  return listingType === 'Rent' ? `${formattedPrice}/mo` : formattedPrice;
-};
+//   return listingType === 'Rent' ? `${formattedPrice}/mo` : formattedPrice;
+// };
 
 interface PropertyCardProps {
   property: Property;
@@ -168,19 +168,18 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     >
       <CardContent sx={{ flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {/* Property Image */}
-        <Box sx={{ position: 'relative', overflow: 'hidden', height: 200, mb: 2, borderRadius: 1, overflow: 'hidden' }}>
-          <CardMedia
-            component="img"
-            height="200"
-            image={propertyImage}
+        <Box sx={{ position: 'relative', height: 200, mb: 2, borderRadius: 1, overflow: 'hidden' }}>
+          <ImageWithFallback
+            src={propertyImage}
             alt={propertyTitle || 'Property image'}
             className="property-image"
-            sx={{
+            style={{
               transition: 'transform 0.5s ease',
               objectFit: 'cover',
               width: '100%',
               height: '100%',
             }}
+            fallbackSrc="/src/assets/images/placeholder-property.jpg"
           />
           
           {/* Listing Type Badge */}
